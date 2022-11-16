@@ -18,7 +18,7 @@ public class TinyKeycloak {
     public static void main(String[] args) throws IOException {
         AuthzClient authzClient = AuthzClient.create();
         AuthorizationRequest request = new AuthorizationRequest();
-        AuthorizationResponse response = authzClient.authorization("idm-admin", "admin123")
+        AuthorizationResponse response = authzClient.authorization("<USER_ID>", "<PASSWORD>")
                 .authorize(request);
         String token = response.getToken();
         System.out.println(token);
