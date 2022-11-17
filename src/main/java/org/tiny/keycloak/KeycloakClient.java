@@ -1,6 +1,5 @@
 package org.tiny.keycloak;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import org.keycloak.representations.idm.authorization.AuthorizationRequest;
 import org.keycloak.representations.idm.authorization.AuthorizationResponse;
 
 /**
+ * KeyCloakクライアントクラス
  *
  * @author DtmOyaji
  */
@@ -66,18 +66,42 @@ public class KeycloakClient {
 
     }
 
+    /**
+     * アクセストークンを取得する。 この値は、認証するたびにKeycloakから発行されるトークンを格納する。
+     *
+     * @return
+     */
     public String getAccessToken() {
         return this.accessToken;
     }
 
+    /**
+     * プロパティを取得する。
+     *
+     * @param key
+     * @return プロパティ値
+     */
     public String getProperty(String key) {
         return this.properties.get(key);
     }
 
+    /**
+     * プロパティを登録する.
+     *
+     * @param key KeycloakClientで定義するキー
+     * @param value 値
+     */
     public final void setProperty(String key, String value) {
         this.properties.put(key, value);
     }
 
+    /**
+     * 認証する.
+     *
+     * @param uid ユーザーID
+     * @param password パスワード
+     * @return 認証に成功するとTrue, 失敗するとfalse
+     */
     public boolean auth(String uid, String password) {
         boolean rvalue = false;
         this.accessToken = "";
@@ -88,21 +112,33 @@ public class KeycloakClient {
                     .authorize(request);
             this.accessToken = response.getToken();
             Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
+            rvalue = true;
         } catch (RuntimeException ex) {
             Logger.getLogger(KeycloakClient.class.getName()).log(Level.SEVERE, ex.getCause().getLocalizedMessage());
         }
         return rvalue;
     }
 
+    /**
+     * 認証する.
+     *
+     * @param accessToken アクセストーク
+     * @return 認証に成功するとTrue, 失敗するとfalse
+     */
     public boolean auth(String accessToken) {
         boolean rvalue = false;
 
-        AuthzClient authzClient = this.getAuthClient();
-        AuthorizationRequest request = new AuthorizationRequest();
-        AuthorizationResponse response = authzClient.authorization(accessToken)
-                .authorize(request);
-        this.accessToken = response.getToken();
-        Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
+        try {
+            AuthzClient authzClient = this.getAuthClient();
+            AuthorizationRequest request = new AuthorizationRequest();
+            AuthorizationResponse response = authzClient.authorization(accessToken)
+                    .authorize(request);
+            this.accessToken = response.getToken();
+            Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
+            rvalue = true;
+        } catch (RuntimeException ex) {
+            Logger.getLogger(KeycloakClient.class.getName()).log(Level.SEVERE, ex.getCause().getLocalizedMessage());
+        }
 
         return rvalue;
     }
@@ -124,6 +160,12 @@ public class KeycloakClient {
         return AuthzClient.create(configuration);
     }
 
+    /**
+     * ユーザー情報を取得する.
+     *
+     * @param uid
+     * @return
+     */
     public UserRepresentation getUserRepresentation(String uid) {
         UserRepresentation rvalue = null;
         Keycloak keycloak = KeycloakBuilder
@@ -147,15 +189,5 @@ public class KeycloakClient {
             }
         }
         return rvalue;
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        PropertyReader preader = new PropertyReader("target/classes/tinycore.properties");
-        KeycloakClient kcc = new KeycloakClient("target/classes/tinycore.properties");
-        kcc.auth(preader.getProperty("test_user"), preader.getProperty("test_password"));
-        UserRepresentation ur = kcc.getUserRepresentation(preader.getProperty("test_user"));
-        Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, ur.getId());
-        kcc.auth(kcc.getAccessToken());
     }
 }

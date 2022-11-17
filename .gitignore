@@ -2,3 +2,4 @@ target
 keycloak.json
 *.properties
 nbactions.xml
+/nbproject/
