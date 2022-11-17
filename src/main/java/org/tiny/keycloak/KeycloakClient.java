@@ -80,18 +80,21 @@ public class KeycloakClient {
 
     public boolean auth(String uid, String password) {
         boolean rvalue = false;
-
-        AuthzClient authzClient = this.getAuthClient();
-        AuthorizationRequest request = new AuthorizationRequest();
-        AuthorizationResponse response = authzClient.authorization(uid, password)
-                .authorize(request);
-        this.accessToken = response.getToken();
-        Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
-
+        this.accessToken = "";
+        try {
+            AuthzClient authzClient = this.getAuthClient();
+            AuthorizationRequest request = new AuthorizationRequest();
+            AuthorizationResponse response = authzClient.authorization(uid, password)
+                    .authorize(request);
+            this.accessToken = response.getToken();
+            Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
+        } catch (RuntimeException ex) {
+            Logger.getLogger(KeycloakClient.class.getName()).log(Level.SEVERE, ex.getCause().getLocalizedMessage());
+        }
         return rvalue;
     }
-    
-    public boolean auth(String accessToken){
+
+    public boolean auth(String accessToken) {
         boolean rvalue = false;
 
         AuthzClient authzClient = this.getAuthClient();
