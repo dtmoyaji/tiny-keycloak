@@ -1,11 +1,14 @@
-ldap_url=
-ldap_admin_context=
-ldap_admin_password=
+auth_server_url=
 
-# for test. システムに組み込む際には以下のパラメータは不要。
-test_ldap_search_node=
-test_ldap_search_filter=
+admin_context=
+admin_password=
+admin_realm=
 
-test_ldap_user=
-test_ldap_password=
+client_realm=
+client_id=
+client_secret=
 
+# 以下はテストで使っているので、組み込み環境では不要
+
+test_user=
+test_password=

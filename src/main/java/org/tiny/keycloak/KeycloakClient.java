@@ -66,6 +66,10 @@ public class KeycloakClient {
 
     }
 
+    public String getAccessToken() {
+        return this.accessToken;
+    }
+
     public String getProperty(String key) {
         return this.properties.get(key);
     }
@@ -77,6 +81,30 @@ public class KeycloakClient {
     public boolean auth(String uid, String password) {
         boolean rvalue = false;
 
+        AuthzClient authzClient = this.getAuthClient();
+        AuthorizationRequest request = new AuthorizationRequest();
+        AuthorizationResponse response = authzClient.authorization(uid, password)
+                .authorize(request);
+        this.accessToken = response.getToken();
+        Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
+
+        return rvalue;
+    }
+    
+    public boolean auth(String accessToken){
+        boolean rvalue = false;
+
+        AuthzClient authzClient = this.getAuthClient();
+        AuthorizationRequest request = new AuthorizationRequest();
+        AuthorizationResponse response = authzClient.authorization(accessToken)
+                .authorize(request);
+        this.accessToken = response.getToken();
+        Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
+
+        return rvalue;
+    }
+
+    private AuthzClient getAuthClient() {
         Map<String, Object> clientCredentials = new HashMap<>();
         clientCredentials.put("secret",
                 this.getProperty(KeycloakClient.CLIENT_SECRET)
@@ -90,14 +118,7 @@ public class KeycloakClient {
                 null
         );
 
-        AuthzClient authzClient = AuthzClient.create(configuration);
-        AuthorizationRequest request = new AuthorizationRequest();
-        AuthorizationResponse response = authzClient.authorization(uid, password)
-                .authorize(request);
-        this.accessToken = response.getToken();
-        Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, this.accessToken);
-
-        return rvalue;
+        return AuthzClient.create(configuration);
     }
 
     public UserRepresentation getUserRepresentation(String uid) {
@@ -114,7 +135,7 @@ public class KeycloakClient {
         UsersResource usersResource = keycloak.realm(
                 this.getProperty(KeycloakClient.CLIENT_REALM)
         ).users();
-        
+
         List<UserRepresentation> usersInfo = usersResource.list();
         for (UserRepresentation userInfo : usersInfo) {
             if (userInfo.getUsername().equals(uid)) {
@@ -132,5 +153,6 @@ public class KeycloakClient {
         kcc.auth(preader.getProperty("test_user"), preader.getProperty("test_password"));
         UserRepresentation ur = kcc.getUserRepresentation(preader.getProperty("test_user"));
         Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, ur.getId());
+        kcc.auth(kcc.getAccessToken());
     }
 }
