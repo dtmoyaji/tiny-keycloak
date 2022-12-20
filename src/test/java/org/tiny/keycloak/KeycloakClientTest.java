@@ -4,6 +4,8 @@
  */
 package org.tiny.keycloak;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +15,7 @@ import org.keycloak.representations.idm.UserRepresentation;
  *
  */
 public class KeycloakClientTest {
-    
+
     KeycloakClient kcc;
     PropertyReader pr;
 
@@ -22,22 +24,27 @@ public class KeycloakClientTest {
 
     @Before
     public void setUp() {
-        kcc=new KeycloakClient("target/classes/tinycore.properties");
-        pr=new PropertyReader("target/classes/tinycore.properties");
+        kcc = new KeycloakClient("target/classes/tinycore.properties");
+        pr = new PropertyReader("target/classes/tinycore.properties");
     }
 
     @Test
-    public void testAuth_String_String() {
-        System.out.println("auth(String,String)");
+    public void testAuth() {
+        System.out.println("auth");
         boolean rvalue = kcc.auth(pr.getProperty("test_user"), pr.getProperty("test_password"));
         assertTrue(rvalue);
+        rvalue = kcc.auth(kcc.getAccessToken());
+        if (rvalue) {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "アクセストークン {0}", kcc.getAccessToken());
+        }
     }
-    
+
     @Test
-    public void testGetUserRepresentation(){
+    public void testGetUserRepresentation() {
         System.out.println("getUserRepresentation");
         UserRepresentation ur = kcc.getUserRepresentation(pr.getProperty("test_user"));
         assertEquals(pr.getProperty("test_user"), ur.getUsername());
+        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "username {0}", ur.getUsername());
     }
 
 }

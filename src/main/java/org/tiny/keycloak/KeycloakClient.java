@@ -133,7 +133,7 @@ public class KeycloakClient {
             AuthorizationRequest request = new AuthorizationRequest();
             AuthorizationResponse response = authzClient.authorization(accessToken)
                     .authorize(request);
-            this.accessToken = response.getToken();
+            this.accessToken = response.getToken(); //再発行されたトークン
             Logger.getLogger(KeycloakClient.class.getName()).log(Level.INFO, "アクセストークンを格納しました");
             rvalue = true;
         } catch (RuntimeException ex) {
@@ -168,12 +168,30 @@ public class KeycloakClient {
      */
     public UserRepresentation getUserRepresentation(String uid) {
         UserRepresentation rvalue = null;
+        List<UserRepresentation> usersInfo = this.getUsers();
+        for (UserRepresentation userInfo : usersInfo) {
+            if (userInfo.getUsername().equals(uid)) {
+                rvalue = userInfo;
+                break;
+            }
+        }
+        return rvalue;
+    }
+
+    /**
+     * 任意のユーザー名とパスワードでユーザーリストを入手する。
+     *
+     * @param authUserName
+     * @param authPassword
+     * @return
+     */
+    public List<UserRepresentation> getUsers(String authUserName, String authPassword) {
         Keycloak keycloak = KeycloakBuilder
                 .builder()
                 .serverUrl(this.getProperty(KeycloakClient.AUTH_SERVER_URL))
                 .realm(this.getProperty(KeycloakClient.ADMIN_REALM))
-                .username(this.getProperty(KeycloakClient.ADMIN_CONTEXT))
-                .password(this.getProperty(KeycloakClient.ADMIN_PASSWORD))
+                .username(authUserName)
+                .password(authPassword)
                 .clientId(this.getProperty(KeycloakClient.CLIENT_ID))
                 .build();
 
@@ -182,12 +200,18 @@ public class KeycloakClient {
         ).users();
 
         List<UserRepresentation> usersInfo = usersResource.list();
-        for (UserRepresentation userInfo : usersInfo) {
-            if (userInfo.getUsername().equals(uid)) {
-                rvalue = userInfo;
-                break;
-            }
-        }
-        return rvalue;
+        return usersInfo;
+    }
+
+    /**
+     * プロパティファイル内のadminユーザーとadminパスワードでユーザーリストを入手する。
+     *
+     * @return
+     */
+    public List<UserRepresentation> getUsers() {
+        return getUsers(
+                this.getProperty(KeycloakClient.ADMIN_CONTEXT),
+                this.getProperty(KeycloakClient.ADMIN_PASSWORD)
+        );
     }
 }
