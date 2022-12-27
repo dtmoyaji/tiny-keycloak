@@ -10,7 +10,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/dtmoyaji/tiny-keycloak</url>
+            <url>https://maven.pkg.github.com/dtmoyaji/${project.artifactId}</url>
         </repository>
     </distributionManagement>    
     
