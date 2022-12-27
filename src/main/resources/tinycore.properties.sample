@@ -1,14 +1,14 @@
-auth_server_url=
+tiny.keycloak.auth_server_url=
 
-admin_context=
-admin_password=
-admin_realm=
+tiny.keycloak.admin_context=
+tiny.keycloak.admin_password=
+tiny.keycloak.admin_realm=
 
-client_realm=
-client_id=
-client_secret=
+tiny.keycloak.client_realm=
+tiny.keycloak.client_id=
+tiny.keycloak.client_secret=
 
 # 以下はテストで使っているので、組み込み環境では不要
 
-test_user=
-test_password=
+tiny.keycloak.test_user=
+tiny.keycloak.test_password=

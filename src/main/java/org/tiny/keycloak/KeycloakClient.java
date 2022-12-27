@@ -21,13 +21,13 @@ import org.keycloak.representations.idm.authorization.AuthorizationResponse;
  */
 public class KeycloakClient {
 
-    public static final String AUTH_SERVER_URL = "auth_server_url";
-    public static final String ADMIN_CONTEXT = "admin_context";
-    public static final String ADMIN_PASSWORD = "admin_password";
-    public static final String ADMIN_REALM = "admin_realm";
-    public static final String CLIENT_REALM = "client_realm";
-    public static final String CLIENT_ID = "client_id";
-    public static final String CLIENT_SECRET = "client_secret";
+    public static final String AUTH_SERVER_URL = "tiny.keycloak.auth_server_url";
+    public static final String ADMIN_CONTEXT = "tiny.keycloak.admin_context";
+    public static final String ADMIN_PASSWORD = "tiny.keycloak.admin_password";
+    public static final String ADMIN_REALM = "tiny.keycloak.admin_realm";
+    public static final String CLIENT_REALM = "tiny.keycloak.client_realm";
+    public static final String CLIENT_ID = "tiny.keycloak.client_id";
+    public static final String CLIENT_SECRET = "tiny.keycloak.client_secret";
 
     private HashMap<String, String> properties = new HashMap<>();
 
